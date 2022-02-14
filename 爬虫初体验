@@ -1,0 +1,31 @@
+import urllib.request
+import ssl
+#使用正则表达式
+import re
+import random
+ssl._create_default_https_context = ssl._create_unverified_context
+url = r"https://www.youdao.com"
+#有些浏览器会多次防止爬虫，所以会使用user-agent，
+useragent1 = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"\
+          "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15"
+useragent2 = "--"
+ulist = [useragent1,useragent2]
+ug = random.choice(ulist)
+
+header = {"User-Agent":ug}
+#返回请求对象
+urr = urllib.request.Request(url,headers = header)
+#urlopen不支持代理，不支持cookie
+#response = urllib.request.urlopen(urr).read().decode()
+#创建自定义opener
+httpheader = urllib.request.HTTPHandler()
+opener = urllib.request.build_opener(httpheader)
+#response = opener.open(urr).read().decode()
+#定义opener为全局
+urllib.request.install_opener(opener)
+response = urllib.request.urlopen(urr).read().decode()
+#print(response)
+#获得标题，注意取消转义r
+str = r"<title>(.*?)</title>"
+str1 = re.findall(str,response)
+print(str1)
